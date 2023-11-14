@@ -5,6 +5,7 @@ import { usersRoute } from "./Pages/Users";
 import { todosRoute } from "./Pages/Todos";
 import { postRoute } from "./Pages/Post";
 import { userRoute } from "./Pages/User";
+import NewPost from "./Pages/NewPost";
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +28,10 @@ export const router = createBrowserRouter([
               {
                 path: ":postId",
                 ...postRoute,
+              },
+              {
+                path: "new",
+                element: <NewPost />,
               },
             ],
           },
