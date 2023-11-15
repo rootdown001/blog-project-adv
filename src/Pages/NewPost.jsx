@@ -1,6 +1,10 @@
-import { Form } from "react-router-dom";
+import { Form, redirect, useLoaderData } from "react-router-dom";
+import { getUsers } from "../api/usersGet";
 
 export default function NewPost() {
+  const users = useLoaderData();
+  console.log("🚀 ~ file: NewPost.jsx:7 ~ NewPost ~ users:", users);
+
   return (
     <>
       <h1 className="page-title">New Post</h1>
@@ -14,16 +18,14 @@ export default function NewPost() {
           <div className="form-group">
             <label htmlFor="userId">Author</label>
             <select name="userId" id="userId">
-              <option value="1">Leanne Graham</option>
-              <option value="2">Ervin Howell</option>
-              <option value="3">Clementine Bauch</option>
-              <option value="4">Patricia Lebsack</option>
-              <option value="5">Chelsey Dietrich</option>
-              <option value="6">Mrs. Dennis Schulist</option>
-              <option value="7">Kurtis Weissnat</option>
-              <option value="8">Nicholas Runolfsdottir V</option>
-              <option value="9">Glenna Reichert</option>
-              <option value="10">Clementina DuBuque</option>
+              {users &&
+                users.map((user) => {
+                  return (
+                    <option key={user.id} value={user.id}>
+                      {user.name}
+                    </option>
+                  );
+                })}
             </select>
           </div>
         </div>
@@ -43,3 +45,30 @@ export default function NewPost() {
     </>
   );
 }
+
+function loader({ request: { signal } }) {
+  return getUsers({ signal });
+}
+
+async function action({ request }) {
+  const formData = await request.formData();
+  const title = await formData.get("title");
+  const userId = await formData.get("userId");
+  const body = await formData.get("body");
+
+  const post = await fetch("http://localhost:3000/posts", {
+    method: "POST",
+    signal: request.signal,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title, userId, body }),
+  }).then((res) => res.json());
+  console.log("🚀 ~ file: router.jsx:64 ~ action: ~ post:", post);
+
+  return redirect("/posts");
+}
+
+export const newRoute = {
+  loader,
+  action,
+  element: <NewPost />,
+};
