@@ -8,7 +8,14 @@ export default function Post() {
 
   return (
     <>
-      <h1 className="page-title">{post.title}</h1>
+      <h1 className="page-title">
+        {post.title}
+        <div className="title-btns">
+          <NavLink className="btn btn-outline" to={`/posts/${post.id}/edit`}>
+            Edit
+          </NavLink>
+        </div>
+      </h1>
       <span className="page-subtitle">
         By: <NavLink to={`/users/${user?.id}`}>{user?.name}</NavLink>
       </span>

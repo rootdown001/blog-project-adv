@@ -10,7 +10,9 @@ import { usersRoute } from "./Pages/Users";
 import { todosRoute } from "./Pages/Todos";
 import { postRoute } from "./Pages/Post";
 import { userRoute } from "./Pages/User";
-import NewPost from "./Pages/NewPost";
+import { newRoute } from "./Pages/NewPost";
+import EditPost from "./Pages/EditPost";
+import { editRoute } from "./Pages/EditPost";
 
 export const router = createBrowserRouter([
   {
@@ -32,42 +34,21 @@ export const router = createBrowserRouter([
               },
               {
                 path: ":postId",
-                ...postRoute,
+                children: [
+                  {
+                    index: true,
+                    ...postRoute,
+                  },
+                  {
+                    path: "edit",
+                    ...editRoute,
+                  },
+                ],
               },
               {
                 path: "new",
-                element: <NewPost />,
-                action: async ({ request }) => {
-                  const formData = await request.formData();
-                  const title = await formData.get("title");
-                  // console.log(
-                  //   "🚀 ~ file: router.jsx:43 ~ action: ~ title:",
-                  //   title
-                  // );
-                  const userId = await formData.get("userId");
-                  // console.log(
-                  //   "🚀 ~ file: router.jsx:48 ~ action: ~ userId:",
-                  //   userId
-                  // );
-                  const body = await formData.get("body");
-                  // console.log(
-                  //   "🚀 ~ file: router.jsx:50 ~ action: ~ body:",
-                  //   body
-                  // );
-
-                  const post = await fetch("http://localhost:3000/posts", {
-                    method: "POST",
-                    signal: request.signal,
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ title, userId, body }),
-                  }).then((res) => res.json());
-                  console.log(
-                    "🚀 ~ file: router.jsx:64 ~ action: ~ post:",
-                    post
-                  );
-
-                  return redirect("/posts");
-                },
+                // newRoute returns loader, action, element
+                ...newRoute,
               },
             ],
           },
