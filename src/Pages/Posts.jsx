@@ -4,7 +4,7 @@ import { getPosts } from "../api/postsGet";
 import PostCard from "../components/PostCard";
 
 export default function Posts() {
-  const posts = useLoaderData();
+  const { posts } = useLoaderData();
 
   return (
     <>
@@ -50,9 +50,25 @@ export default function Posts() {
   );
 }
 
-function loader({ request: { signal } }) {
-  // use axios instead of fetch so we can take advantage of axious features later
-  return getPosts({ signal });
+async function loader({ request: { signal, url } }) {
+  const searchParams = new URL(url).searchParams;
+  const query = await searchParams.get("query");
+  console.log("🚀 ~ file: Posts.jsx:56 ~ loader ~ query:", query);
+
+  let posts;
+
+  if (query === null) {
+    console.log("query null");
+    posts = getPosts({ signal });
+  } else {
+    console.log("query not null");
+    posts = fetch(`http://localhost:3000/posts?q=${query}`, {
+      signal,
+    }).then((res) => res.json());
+  }
+
+  console.log("🚀 ~ file: Posts.jsx:61 ~ loader ~ posts:", posts);
+  return { posts: await posts };
 }
 
 export const postsRoute = {

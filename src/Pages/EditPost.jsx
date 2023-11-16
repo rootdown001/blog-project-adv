@@ -1,5 +1,5 @@
 import { Form, NavLink, redirect, useLoaderData } from "react-router-dom";
-import { getPost, getPosts } from "../api/postsGet";
+import { getPost } from "../api/postsGet";
 import { getUsers } from "../api/usersGet";
 
 export default function EditPost() {
@@ -73,7 +73,6 @@ async function action({ request, params }) {
       body: JSON.stringify({ title, body, userId }),
     }
   ).then((res) => res.json());
-  console.log("🚀 ~ file: router.jsx:64 ~ action: ~ updatedPost:", updatedPost);
 
   return redirect("/posts");
 }
