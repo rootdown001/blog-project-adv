@@ -2,9 +2,19 @@ import axios from "axios";
 import { useLoaderData, NavLink, useNavigation, Form } from "react-router-dom";
 import { getPosts } from "../api/postsGet";
 import PostCard from "../components/PostCard";
+import { useEffect, useRef } from "react";
 
 export default function Posts() {
-  const { posts } = useLoaderData();
+  const {
+    posts,
+    searchParams: { query },
+  } = useLoaderData();
+  console.log("🚀 ~ file: Posts.jsx:9 ~ Posts ~ query:", query);
+  const queryRef = useRef();
+
+  useEffect(() => {
+    queryRef.current.value = query;
+  }, [query]);
 
   return (
     <>
@@ -20,7 +30,7 @@ export default function Posts() {
         <div className="form-row">
           <div className="form-group">
             <label htmlFor="query">Query</label>
-            <input type="search" name="query" id="query" />
+            <input type="search" name="query" id="query" ref={queryRef} />
           </div>
           <div className="form-group">
             <label htmlFor="userId">Author</label>
@@ -52,23 +62,23 @@ export default function Posts() {
 
 async function loader({ request: { signal, url } }) {
   const searchParams = new URL(url).searchParams;
-  const query = await searchParams.get("query");
+  const query = searchParams.get("query") || "";
   console.log("🚀 ~ file: Posts.jsx:56 ~ loader ~ query:", query);
 
   let posts;
 
-  if (query === null) {
-    console.log("query null");
+  if (query === "") {
     posts = getPosts({ signal });
   } else {
-    console.log("query not null");
     posts = fetch(`http://localhost:3000/posts?q=${query}`, {
       signal,
     }).then((res) => res.json());
   }
 
-  console.log("🚀 ~ file: Posts.jsx:61 ~ loader ~ posts:", posts);
-  return { posts: await posts };
+  return {
+    searchParams: { query },
+    posts: await posts,
+  };
 }
 
 export const postsRoute = {
