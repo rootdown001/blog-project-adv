@@ -8,7 +8,7 @@ export default function EditPost() {
   return (
     <>
       <h1 className="page-title">Edit Post</h1>
-      <Form method="post" action="/posts/2/edit" className="form">
+      <Form method="post" action={`/posts/${post.id}/edit`} className="form">
         <div className="form-row">
           <div className="form-group">
             <label htmlFor="title">Title</label>
