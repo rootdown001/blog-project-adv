@@ -30,7 +30,6 @@ export default function EditPost() {
                     </option>
                   );
                 })}
-              {/* <option value="1">Leanne Graham</option>*/}
             </select>
           </div>
         </div>

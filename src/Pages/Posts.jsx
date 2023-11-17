@@ -3,13 +3,15 @@ import { useLoaderData, NavLink, useNavigation, Form } from "react-router-dom";
 import { getPosts } from "../api/postsGet";
 import PostCard from "../components/PostCard";
 import { useEffect, useRef } from "react";
+import { getUsers } from "../api/usersGet";
 
 export default function Posts() {
   const {
     posts,
+    users,
     searchParams: { query },
   } = useLoaderData();
-  console.log("🚀 ~ file: Posts.jsx:9 ~ Posts ~ query:", query);
+
   const queryRef = useRef();
 
   useEffect(() => {
@@ -35,7 +37,15 @@ export default function Posts() {
           <div className="form-group">
             <label htmlFor="userId">Author</label>
             <select type="search" name="userId" id="userId">
-              <option value="">Any</option>
+              {users &&
+                users.map((user) => {
+                  return (
+                    <option key={user.id} value={user.id}>
+                      {user.name}
+                    </option>
+                  );
+                })}
+              {/* <option value="">Any</option>
               <option value="1">Leanne Graham</option>
               <option value="2">Ervin Howell</option>
               <option value="3">Clementine Bauch</option>
@@ -45,7 +55,7 @@ export default function Posts() {
               <option value="7">Kurtis Weissnat</option>
               <option value="8">Nicholas Runolfsdottir V</option>
               <option value="9">Glenna Reichert</option>
-              <option value="10">Clementina DuBuque</option>
+              <option value="10">Clementina DuBuque</option> */}
             </select>
           </div>
           <button className="btn">Filter</button>
@@ -63,20 +73,28 @@ export default function Posts() {
 async function loader({ request: { signal, url } }) {
   const searchParams = new URL(url).searchParams;
   const query = searchParams.get("query") || "";
-  console.log("🚀 ~ file: Posts.jsx:56 ~ loader ~ query:", query);
+  const userId = searchParams.get("userId") || "";
+  console.log("🚀 ~ file: Posts.jsx:67 ~ loader ~ userId:", userId);
+
+  const users = getUsers({ signal });
 
   let posts;
 
-  if (query === "") {
-    posts = getPosts({ signal });
-  } else {
-    posts = fetch(`http://localhost:3000/posts?q=${query}`, {
-      signal,
-    }).then((res) => res.json());
-  }
+  posts = fetch(`http://localhost:3000/posts?q=${query}`, {
+    signal,
+  }).then((res) => res.json());
+
+  // if (query === "") {
+  //   posts = getPosts({ signal });
+  // } else {
+  //   posts = fetch(`http://localhost:3000/posts?q=${query}`, {
+  //     signal,
+  //   }).then((res) => res.json());
+  // }
 
   return {
     searchParams: { query },
+    users: await users,
     posts: await posts,
   };
 }
