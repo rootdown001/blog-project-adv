@@ -1,9 +1,11 @@
-import { Form, redirect, useLoaderData } from "react-router-dom";
+import { Form, redirect, useLoaderData, useNavigation } from "react-router-dom";
 import { getUsers } from "../api/usersGet";
 
 export default function NewPost() {
   const users = useLoaderData();
-  console.log("🚀 ~ file: NewPost.jsx:7 ~ NewPost ~ users:", users);
+  const { state } = useNavigation();
+
+  const isSubmitting = state === "submitting" || state === "loading";
 
   return (
     <>
@@ -39,7 +41,9 @@ export default function NewPost() {
           <a className="btn btn-outline" href="/posts">
             Cancel
           </a>
-          <button className="btn">Save</button>
+          <button disabled={isSubmitting} className="btn">
+            {isSubmitting ? "Submitting" : "Save"}
+          </button>
         </div>
       </Form>
     </>
@@ -62,7 +66,6 @@ async function action({ request }) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ title, userId, body }),
   }).then((res) => res.json());
-  console.log("🚀 ~ file: router.jsx:64 ~ action: ~ post:", post);
 
   return redirect("/posts");
 }

@@ -1,9 +1,18 @@
-import { Form, NavLink, redirect, useLoaderData } from "react-router-dom";
+import {
+  Form,
+  NavLink,
+  redirect,
+  useLoaderData,
+  useNavigation,
+} from "react-router-dom";
 import { getPost } from "../api/postsGet";
 import { getUsers } from "../api/usersGet";
 
 export default function EditPost() {
   const { post, users } = useLoaderData();
+  const { state } = useNavigation();
+
+  const isSubmitting = state === "submitting" || state === "loading";
 
   return (
     <>
@@ -43,7 +52,9 @@ export default function EditPost() {
           <NavLink className="btn btn-outline" to={`/posts/${post.id}`}>
             Cancel
           </NavLink>
-          <button className="btn">Save</button>
+          <button disabled={isSubmitting} className="btn">
+            {isSubmitting ? "Submitting" : "Save"}
+          </button>
         </div>
       </Form>
     </>
