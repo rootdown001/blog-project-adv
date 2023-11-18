@@ -1,9 +1,20 @@
-import { Form, redirect, useLoaderData, useNavigation } from "react-router-dom";
+import {
+  Form,
+  redirect,
+  useActionData,
+  useLoaderData,
+  useNavigation,
+} from "react-router-dom";
 import { getUsers } from "../api/usersGet";
 
 export default function NewPost() {
   const users = useLoaderData();
   const { state } = useNavigation();
+  const errorMessage = useActionData();
+  console.log(
+    "🚀 ~ file: NewPost.jsx:14 ~ NewPost ~ errorMessage:",
+    errorMessage
+  );
 
   const isSubmitting = state === "submitting" || state === "loading";
 
@@ -12,14 +23,31 @@ export default function NewPost() {
       <h1 className="page-title">New Post</h1>
       <Form method="post" action="/posts/new" className="form">
         <div className="form-row">
-          <div className="form-group error">
+          <div
+            className={
+              errorMessage === "Title is required"
+                ? "form-group error"
+                : "form-group"
+            }
+          >
             <label htmlFor="title">Title</label>
             <input type="text" name="title" id="title" />
-            <div className="error-message">Required</div>
+            {errorMessage === "Title is required" ? (
+              <div className="error-message">Required</div>
+            ) : (
+              ""
+            )}
           </div>
-          <div className="form-group">
+          <div
+            className={
+              errorMessage === "Author is required"
+                ? "form-group error"
+                : "form-group"
+            }
+          >
             <label htmlFor="userId">Author</label>
             <select name="userId" id="userId">
+              <option value={""}>-- Select --</option>;
               {users &&
                 users.map((user) => {
                   return (
@@ -29,12 +57,28 @@ export default function NewPost() {
                   );
                 })}
             </select>
+            {errorMessage === "Author is required" ? (
+              <div className="error-message">Required</div>
+            ) : (
+              ""
+            )}
           </div>
         </div>
         <div className="form-row">
-          <div className="form-group">
+          <div
+            className={
+              errorMessage === "Body is required"
+                ? "form-group error"
+                : "form-group"
+            }
+          >
             <label htmlFor="body">Body</label>
             <textarea name="body" id="body"></textarea>
+            {errorMessage === "Body is required" ? (
+              <div className="error-message">Required</div>
+            ) : (
+              ""
+            )}
           </div>
         </div>
         <div className="form-row form-btn-row">
@@ -59,6 +103,17 @@ async function action({ request }) {
   const title = await formData.get("title");
   const userId = await formData.get("userId");
   const body = await formData.get("body");
+
+  // add validation
+  if (title === "") {
+    return "Title is required";
+  }
+  if (userId === "") {
+    return "Author is required";
+  }
+  if (body === "") {
+    return "Body is required";
+  }
 
   const post = await fetch("http://localhost:3000/posts", {
     method: "POST",
