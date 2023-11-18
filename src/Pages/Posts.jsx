@@ -9,10 +9,11 @@ export default function Posts() {
   const {
     posts,
     users,
-    searchParams: { query },
+    searchParams: { query, userId },
   } = useLoaderData();
 
   const queryRef = useRef();
+  const userRef = useRef();
 
   useEffect(() => {
     queryRef.current.value = query;
@@ -36,7 +37,8 @@ export default function Posts() {
           </div>
           <div className="form-group">
             <label htmlFor="userId">Author</label>
-            <select type="search" name="userId" id="userId">
+            <select type="search" name="userId" id="userId" ref={userRef}>
+              <option value="">Any</option>
               {users &&
                 users.map((user) => {
                   return (
@@ -45,11 +47,9 @@ export default function Posts() {
                     </option>
                   );
                 })}
-              {/* TODO: work on "Any" */}
-
-              {/* <option value="">Any</option> */}
             </select>
           </div>
+
           <button className="btn">Filter</button>
         </div>
       </Form>
@@ -72,20 +72,18 @@ async function loader({ request: { signal, url } }) {
 
   let posts;
 
-  posts = fetch(`http://localhost:3000/posts?q=${query}`, {
-    signal,
-  }).then((res) => res.json());
-
-  // if (query === "") {
-  //   posts = getPosts({ signal });
-  // } else {
-  //   posts = fetch(`http://localhost:3000/posts?q=${query}`, {
-  //     signal,
-  //   }).then((res) => res.json());
-  // }
+  if (userId) {
+    posts = fetch(`http://localhost:3000/posts?q=${query}&userId=${userId}`, {
+      signal,
+    }).then((res) => res.json());
+  } else {
+    posts = fetch(`http://localhost:3000/posts?q=${query}`, {
+      signal,
+    }).then((res) => res.json());
+  }
 
   return {
-    searchParams: { query },
+    searchParams: { query, userId },
     users: await users,
     posts: await posts,
   };
