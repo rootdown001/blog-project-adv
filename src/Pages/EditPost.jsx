@@ -75,7 +75,7 @@ async function action({ request, params }) {
   const body = await formData.get("body");
 
   const updatedPost = await fetch(
-    `http://localhost:3000/posts/${params.postId}`,
+    `https://jsonplaceholder.typicode.com/posts/${params.postId}`,
     {
       method: "PUT",
       signal: request.signal,

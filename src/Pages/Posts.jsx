@@ -17,6 +17,10 @@ export default function Posts() {
 
   useEffect(() => {
     queryRef.current.value = query;
+    console.log(
+      "🚀 ~ file: Posts.jsx:20 ~ useEffect ~ queryRef.current",
+      queryRef.current
+    );
   }, [query]);
 
   return (
@@ -73,11 +77,14 @@ async function loader({ request: { signal, url } }) {
   let posts;
 
   if (userId) {
-    posts = fetch(`http://localhost:3000/posts?q=${query}&userId=${userId}`, {
-      signal,
-    }).then((res) => res.json());
+    posts = fetch(
+      `https://jsonplaceholder.typicode.com/posts?q=${query}&userId=${userId}`,
+      {
+        signal,
+      }
+    ).then((res) => res.json());
   } else {
-    posts = fetch(`http://localhost:3000/posts?q=${query}`, {
+    posts = fetch(`https://jsonplaceholder.typicode.com/posts?q=${query}`, {
       signal,
     }).then((res) => res.json());
   }

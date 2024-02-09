@@ -115,7 +115,7 @@ async function action({ request }) {
     return "Body is required";
   }
 
-  const post = await fetch("http://localhost:3000/posts", {
+  const post = await fetch("https://jsonplaceholder.typicode.com/posts", {
     method: "POST",
     signal: request.signal,
     headers: { "Content-Type": "application/json" },
